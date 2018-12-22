@@ -16,7 +16,7 @@ impl Solution {
         l1: Option<Box<ListNode>>,
         l2: Option<Box<ListNode>>,
     ) -> Option<Box<ListNode>> {
-        let mut head = Box::new(ListNode::new(0));
+        let mut head = Some(Box::new(ListNode::new(0)));
         let (mut p, mut q, mut carry) = (l1, l2, 0);
         let mut current = head.as_mut();
         while p.is_some() || q.is_some() {
@@ -31,16 +31,16 @@ impl Solution {
             }
 
             carry = sum / 10;
-            current.next = Some(Box::new(ListNode::new(sum % 10)));
-            unsafe {
-                current = (*(*(current as *mut ListNode)).next.as_mut().unwrap()).as_mut();
+            if let Some(cur) = current {
+                cur.next = Some(Box::new(ListNode::new(sum % 10)));
+                current = cur.next.as_mut();
             }
         }
 
         if carry > 0 {
-            current.next = Some(Box::new(ListNode::new(1)));
+            current.unwrap().next = Some(Box::new(ListNode::new(1)));
         }
-        head.next
+        head.unwrap().next
     }
 }
 struct Solution {}
