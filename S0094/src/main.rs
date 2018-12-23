@@ -35,13 +35,11 @@ impl Solution {
             let root_ptr = root.as_ref().unwrap().as_ptr();
             val = (*root_ptr).val;
 
-            // take 破坏了原本的数据结构，怎么才能恢复回去呢？
-            if let Some(l) = (*root_ptr).left.take() {
-                left_vec = Solution::inorder_traversal(Some(l));
+            if let Some(l) = &(*root_ptr).left {
+                left_vec = Solution::inorder_traversal(Some(Rc::clone(l)));
             }
-            // take 破坏了原本的数据结构，怎么才能恢复回去呢？
-            if let Some(r) = (*root_ptr).right.take() {
-                right_vec = Solution::inorder_traversal(Some(r));
+            if let Some(r) = &(*root_ptr).right {
+                right_vec = Solution::inorder_traversal(Some(Rc::clone(r)));
             }
         }
 
@@ -49,6 +47,7 @@ impl Solution {
         left_vec.push(val);
         left_vec.append(&mut right_vec);
         println!("{:?}", left_vec);
+        println!("{:?}", root);
         return left_vec;
     }
 }
