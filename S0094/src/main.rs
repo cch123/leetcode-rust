@@ -27,25 +27,20 @@ impl Solution {
         if root.is_none() {
             let res_vec: Vec<i32> = vec![];
             return res_vec;
-
         }
         let val;
+        let mut left_vec: Vec<i32> = vec![];
+        let mut right_vec: Vec<i32> = vec![];
         unsafe {
-            val = ((*root.as_ref().unwrap().as_ptr())).val;
-        }
+            let root_ptr = root.as_ref().unwrap().as_ptr();
+            val = (*root_ptr).val;
 
-        let mut left_vec:Vec<i32>=vec![];
-        unsafe {
             // take 破坏了原本的数据结构，怎么才能恢复回去呢？
-            if let Some(l) = (*root.as_ref().unwrap().as_ptr()).left.take() {
+            if let Some(l) = (*root_ptr).left.take() {
                 left_vec = Solution::inorder_traversal(Some(l));
             }
-        }
-
-        let mut right_vec: Vec<i32>=vec![];
-        unsafe {
             // take 破坏了原本的数据结构，怎么才能恢复回去呢？
-            if let Some(r) = (*root.as_ref().unwrap().as_ptr()).right.take() {
+            if let Some(r) = (*root_ptr).right.take() {
                 right_vec = Solution::inorder_traversal(Some(r));
             }
         }
@@ -53,7 +48,7 @@ impl Solution {
         // 左子树结果 + cur 节点值 + 右子树结果
         left_vec.push(val);
         left_vec.append(&mut right_vec);
-        println!("{:?}", root);
+        println!("{:?}", left_vec);
         return left_vec;
     }
 }
