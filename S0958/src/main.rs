@@ -28,35 +28,53 @@ impl Solution {
             return true;
         }
 
-        //let root = root.unwrap();
-        //let mut n = root.borrow_mut();
+        let mut cur_level: Vec<Option<Rc<RefCell<TreeNode>>>> = vec![root];
 
-        let mut cur_level:Vec<Option<Rc<RefCell<TreeNode>>>> = vec![root];
-
-        let mut cur_level_len= 1;
         loop {
-            if cur_level.len() != cur_level_len {
-                return false
+            let mut next_level: Vec<Option<Rc<RefCell<TreeNode>>>> = vec![];
+            let mut next_level_has_some = false;
+            for (idx, elem) in cur_level.iter().enumerate() {
+                match elem {
+                    Some(x) => {
+                        if idx > 0 && cur_level[idx-1].is_none() {
+                            return false;
+                        }
+                        let left = x.borrow_mut().left.take();
+                        let right = x.borrow_mut().right.take();
+                        if left.is_some()||right.is_some() {
+                            next_level_has_some = true;
+                        }
+
+                        next_level.push(left);
+                        next_level.push(right);
+                    }
+                    None => {
+                        if next_level.len() > 0 && next_level_has_some == true{
+                            return false;
+                        }
+                        if idx == cur_level.len()-1 && next_level_has_some == false{
+                            return true;
+                        }
+                    },
+                }
             }
-
-            let mut next_level:Vec<Option<Rc<RefCell<TreeNode>>>> = vec![];
-            let l = cur_level.len();
-            let mut idx = 0 ;
-
-            while idx < l {
-                let mut elem = &cur_level[idx].as_ref().unwrap().borrow_mut().left ;
-                //next_level.push(elem.borrow_mut().left);
-                next_level.push(*elem);
-            }
-
-            return true;
+            cur_level = next_level;
+            //println!("{:?}", next_level);
         }
-
         return false;
     }
 }
 
 fn main() {
     let mut root = Some(Rc::new(RefCell::new(TreeNode::new(0))));
-    Solution::is_complete_tree(root);
+    let res = Solution::is_complete_tree(root);
+    println!("{}", res);
+    let mut root = Some(Rc::new(RefCell::new(TreeNode::new(0))));
+    root.as_ref().unwrap().borrow_mut().right = Some(Rc::new(RefCell::new(TreeNode::new(0))));
+    let res = Solution::is_complete_tree(root);
+    println!("{}", res);
+    let mut root = Some(Rc::new(RefCell::new(TreeNode::new(0))));
+    root.as_ref().unwrap().borrow_mut().left= Some(Rc::new(RefCell::new(TreeNode::new(0))));
+    let res = Solution::is_complete_tree(root);
+    println!("{}", res);
 }
