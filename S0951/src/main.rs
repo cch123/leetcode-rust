@@ -49,29 +49,30 @@ impl Solution {
                     r2_b.right.take(),
                 );
 
-                if r1_l.is_none() && r2_l.is_none() {
-                    /*
-                            O                     O
-                           /  \                  /  \
-                        None  Some/None        None Some/None
-                    */
-                    return Solution::flip_equiv(r1_l, r2_l) && Solution::flip_equiv(r1_r, r2_r);
+                match (&r1_l, &r2_l) {
+                    (None, None) => {
+                        /*
+                                O                     O
+                               /  \                  /  \
+                            None  Some/None        None Some/None
+                        */
+                        return Solution::flip_equiv(r1_l, r2_l) && Solution::flip_equiv(r1_r, r2_r)
+                    },
+                    (Some(_), Some(_)) => {
+                        /*
+                                O                     O
+                               /  \                  /  \
+                            Some  Some/None        Some Some/None
+                        */
+                        if r1_l.as_ref().unwrap().borrow().val == r2_l.as_ref().unwrap().borrow().val {
+                            return Solution::flip_equiv(r1_l, r2_l) && Solution::flip_equiv(r1_r, r2_r);
+                        }
+                    },
+                    (_, _) => return Solution::flip_equiv(r1_l, r2_r) && Solution::flip_equiv(r1_r, r2_l),
                 }
 
-                if r1_l.is_some() && r2_l.is_some() {
-                    /*
-                            O                     O
-                           /  \                  /  \
-                        Some  Some/None        Some Some/None
-                    */
-                    // 比较 left 和 left
-                    if r1_l.as_ref().unwrap().borrow().val == r2_l.as_ref().unwrap().borrow().val {
-                        return Solution::flip_equiv(r1_l, r2_l) && Solution::flip_equiv(r1_r, r2_r);
-                    }
-                }
-
-                // 除了上面的两种情况，其它情况应该都是左右比较，右左比较
-                return Solution::flip_equiv(r1_l, r2_r) && Solution::flip_equiv(r1_r, r2_l);
+                // 这里理论上是 unreachable
+                return false;
             }
         }
     }
