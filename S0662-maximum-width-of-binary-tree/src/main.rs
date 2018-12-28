@@ -1,5 +1,61 @@
 // Definition for a binary tree node.
 struct Solution;
+#[macro_export]
+macro_rules! btree {
+    () => {
+        None
+    };
+    ($($e:tt), *) => {
+        {
+            let elems = $crate::null_to_none![$($e), *];
+            let head = Some($crate::Rc::new($crate::RefCell::new($crate::TreeNode::new(elems[0].unwrap()))));
+            let mut nodes = std::collections::VecDeque::new();
+            nodes.push_back(head.as_ref().unwrap().clone());
+
+            for i in elems[1..].chunks(2) {
+                let node = nodes.pop_front().unwrap();
+                if let Some(val) = i[0]{
+                    node.borrow_mut().left = Some($crate::Rc::new($crate::RefCell::new($crate::TreeNode::new(val))));
+                    nodes.push_back(node.borrow().left.as_ref().unwrap().clone());
+                }
+                if i.len() > 1 {
+                    if let Some(val) = i[1] {
+                        node.borrow_mut().right = Some($crate::Rc::new($crate::RefCell::new($crate::TreeNode::new(val))));
+                        nodes.push_back(node.borrow().right.as_ref().unwrap().clone());
+                    }
+                }
+            }
+            head
+        }
+    };
+}
+#[macro_export]
+macro_rules! null_to_none {
+    (@start $($e:tt), *) => {
+        {
+            let mut ret: Vec<Option<i32>> = vec![];
+            $crate::null_to_none![@next ret; $($e), *];
+            ret
+        }
+    };
+    (@next $vec:expr; null, $($tail:tt), *) => {
+        $vec.push(None);
+        $crate::null_to_none![@next $vec; $($tail), *];
+    };
+    (@next $vec:expr; $e:tt, $($tail:tt), *) => {
+        $vec.push(Some($e));
+        $crate::null_to_none![@next $vec; $($tail), *];
+    };
+    (@next $vec:expr; null) => {
+        $vec.push(None);
+    };
+    (@next $vec:expr; $e:tt) => {
+        $vec.push(Some($e));
+    };
+    ($($e:tt), *) => {
+        $crate::null_to_none![@start $($e), *]
+    };
+}
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct TreeNode {
@@ -22,6 +78,16 @@ impl TreeNode {
 use std::cell::RefCell;
 use std::rc::Rc;
 impl Solution {
+    fn print(v : &Vec<Option<Rc<RefCell<TreeNode>>>>) {
+        for elem in v {
+            if elem.is_some() {
+                print!(" {}", elem.as_ref().unwrap().borrow_mut().val);
+            }else {
+                print!(" none");
+            }
+        }
+        println!("");
+    }
     pub fn width_of_binary_tree(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
         // 层序遍历就行了
         let mut cur_level = vec![root];
@@ -29,6 +95,7 @@ impl Solution {
         loop {
             let (mut some_start, mut some_end) = (-1, -1);
             let mut next_level = vec![];
+            Solution::print(&cur_level);
             for (idx, n) in cur_level.iter().enumerate() {
                 if some_start == -1 && n.is_some() {
                     some_start = idx as i32;
@@ -60,49 +127,10 @@ impl Solution {
         }
     }
 }
+
 fn main() {
-    let r = Some(Rc::new(RefCell::new(TreeNode::new(1))));
-    r.as_ref().unwrap().borrow_mut().left = Some(Rc::new(RefCell::new(TreeNode::new(2))));
-    r.as_ref()
-        .unwrap()
-        .borrow_mut()
-        .left
-        .as_ref()
-        .unwrap()
-        .borrow_mut()
-        .left = Some(Rc::new(RefCell::new(TreeNode::new(2))));
-    r.as_ref()
-        .unwrap()
-        .borrow_mut()
-        .left
-        .as_ref()
-        .unwrap()
-        .borrow_mut()
-        .left
-        .as_ref()
-        .unwrap()
-        .borrow_mut()
-        .left = Some(Rc::new(RefCell::new(TreeNode::new(2))));
-    r.as_ref().unwrap().borrow_mut().right = Some(Rc::new(RefCell::new(TreeNode::new(2))));
-    r.as_ref()
-        .unwrap()
-        .borrow_mut()
-        .right
-        .as_ref()
-        .unwrap()
-        .borrow_mut()
-        .right = Some(Rc::new(RefCell::new(TreeNode::new(2))));
-    r.as_ref()
-        .unwrap()
-        .borrow_mut()
-        .right
-        .as_ref()
-        .unwrap()
-        .borrow_mut()
-        .right
-        .as_ref()
-        .unwrap()
-        .borrow_mut()
-        .right = Some(Rc::new(RefCell::new(TreeNode::new(2))));
+    use crate::btree;
+    use crate::TreeNode;
+    let r = btree![1,1,1,1,1,1,1,null,null,null,1,null,null,null,null,2,2,2,2,2,2,2,null,2,null,null,2,null,2];
     println!("{}", Solution::width_of_binary_tree(r));
 }
