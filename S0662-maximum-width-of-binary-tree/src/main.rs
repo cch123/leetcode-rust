@@ -77,17 +77,8 @@ impl TreeNode {
 
 use std::cell::RefCell;
 use std::rc::Rc;
+
 impl Solution {
-    fn print(v : &Vec<Option<Rc<RefCell<TreeNode>>>>) {
-        for elem in v {
-            if elem.is_some() {
-                print!(" {}", elem.as_ref().unwrap().borrow_mut().val);
-            }else {
-                print!(" none");
-            }
-        }
-        println!("");
-    }
     pub fn width_of_binary_tree(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
         // 层序遍历就行了
         let mut cur_level = vec![root];
@@ -95,8 +86,13 @@ impl Solution {
         loop {
             let (mut some_start, mut some_end) = (-1, -1);
             let mut next_level = vec![];
-            Solution::print(&cur_level);
+            //println!("current is");
+            //Solution::print(&cur_level);
+            let mut some_seen = false;
             for (idx, n) in cur_level.iter().enumerate() {
+                if n.is_some() {
+                    some_seen = true;
+                }
                 if some_start == -1 && n.is_some() {
                     some_start = idx as i32;
                 }
@@ -114,15 +110,15 @@ impl Solution {
                     }
                 }
                 //println!("start{},end{}", some_start, some_end);
-                match (some_start, some_end) {
-                    (-1, -1) => return res,
-                    (x, y) => {
-                        if res < (y - x + 1) {
-                            res = y - x + 1;
-                        }
-                    }
+                if res < (some_end - some_start + 1) {
+                    res = some_end - some_start + 1;
                 }
             }
+            if some_seen == false {
+                return res;
+            }
+            //println!("next is");
+            //Solution::print(&next_level);
             cur_level = next_level;
         }
     }
@@ -131,6 +127,9 @@ impl Solution {
 fn main() {
     use crate::btree;
     use crate::TreeNode;
-    let r = btree![1,1,1,1,1,1,1,null,null,null,1,null,null,null,null,2,2,2,2,2,2,2,null,2,null,null,2,null,2];
+    let r = btree![
+        1, 1, 1, 1, 1, 1, 1, null, null, null, 1, null, null, null, null, 2, 2, 2, 2, 2, 2, 2,
+        null, 2, null, null, 2, null, 2
+    ];
     println!("{}", Solution::width_of_binary_tree(r));
 }
