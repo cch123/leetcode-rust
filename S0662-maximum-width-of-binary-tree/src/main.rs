@@ -81,45 +81,52 @@ use std::rc::Rc;
 impl Solution {
     pub fn width_of_binary_tree(root: Option<Rc<RefCell<TreeNode>>>) -> i32 {
         // 层序遍历就行了
-        let mut cur_level = vec![root];
-        let mut res = 0;
+        let (mut cur_level, mut cur_level_idx) = (vec![root], vec![0]);
+        let mut max_width = 0;
         loop {
             let (mut some_start, mut some_end) = (-1, -1);
-            let mut next_level = vec![];
-            //println!("current is");
-            //Solution::print(&cur_level);
-            let mut some_seen = false;
+            let (mut next_level, mut next_level_idx) = (vec![], vec![]);
+
+            if cur_level.len() == 0 {
+                return max_width;
+            }
+
             for (idx, n) in cur_level.iter().enumerate() {
-                if n.is_some() {
-                    some_seen = true;
-                }
+                let cur_node_idx = cur_level_idx[idx];
+
                 if some_start == -1 && n.is_some() {
-                    some_start = idx as i32;
+                    some_start = cur_node_idx;
                 }
                 if some_start != -1 && n.is_some() {
-                    some_end = idx as i32;
+                    some_end = cur_node_idx;
                 }
-                match n {
-                    Some(elem) => {
-                        let mut e_b = elem.borrow_mut();
-                        let (l, r) = (e_b.left.take(), e_b.right.take());
-                        next_level.append(&mut vec![l, r]);
+
+                // 当前节点是 some
+                // 需要把孩子节点和其索引推到下一层去
+                if let Some(elem) = n {
+                    let mut e_b = elem.borrow_mut();
+                    let (l, r) = (e_b.left.take(), e_b.right.take());
+
+                    if l.is_some() {
+                        next_level.push(l);
+                        next_level_idx.push(cur_node_idx * 2);
                     }
-                    None => {
-                        next_level.append(&mut vec![None, None]);
+
+                    if r.is_some() {
+                        next_level.push(r);
+                        next_level_idx.push(cur_node_idx * 2 + 1);
                     }
                 }
-                //println!("start{},end{}", some_start, some_end);
-                if res < (some_end - some_start + 1) {
-                    res = some_end - some_start + 1;
+
+                if max_width < (some_end - some_start + 1) {
+                    max_width = some_end - some_start + 1;
                 }
             }
-            if some_seen == false {
-                return res;
-            }
-            //println!("next is");
-            //Solution::print(&next_level);
+
+
+            // 下一层初始化
             cur_level = next_level;
+            cur_level_idx = next_level_idx;
         }
     }
 }
