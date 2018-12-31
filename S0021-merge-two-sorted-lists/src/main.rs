@@ -32,6 +32,12 @@ impl Solution {
                     if n1.val < n2.val {
                         std::mem::swap(&mut cursor.next, l1);
                         std::mem::swap(&mut cursor.next.as_mut().unwrap().next, l1);
+                        /* 其实把向后移动放这里可能更直观一些
+                        std::mem::swap(&mut l3.next, &mut l1);
+                        l3 = l3.next.as_mut().unwrap();
+                        std::mem::swap(&mut l3.next, &mut l1);
+                        这么写的话，if 外面那个 cur = cur.next 就不用写了
+                        */
                     } else {
                         std::mem::swap(&mut cursor.next, l2);
                         std::mem::swap(&mut cursor.next.as_mut().unwrap().next, l2);
