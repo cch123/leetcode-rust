@@ -30,18 +30,28 @@ impl Solution {
             if n1.val < n2.val {
                 std::mem::swap(&mut cursor.next,l1);
                 std::mem::swap(&mut cursor.next.as_mut().unwrap().next,l1);
+                //println!("1cursor :{:?}", cursor);
             } else {
                 std::mem::swap(&mut cursor.next,l2);
                 std::mem::swap(&mut cursor.next.as_mut().unwrap().next,l2);
+                //println!("2cursor :{:?}", cursor);
             }
+            cursor = cursor.next.as_mut().unwrap();
         }
+
         if l1.is_some() {
             std::mem::swap(&mut cursor.next, l1);
         } else {
             std::mem::swap(&mut cursor.next, l2);
         }
+
         return h.next;
     }
 }
 
-fn main() {}
+fn main() {
+    let l1 = linkedlist![1,2,3,4];
+    let l2 = linkedlist![1,2,3,4];
+    let l3 = Solution::merge_two_lists(l1,l2);
+    println!("{:?}", l3);
+}
