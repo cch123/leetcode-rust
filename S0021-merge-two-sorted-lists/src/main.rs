@@ -24,25 +24,30 @@ impl Solution {
         let mut h = Box::new(ListNode::new(0));
         let mut cursor = &mut h;
 
-        let (mut l1, mut l2) = (&mut l1,&mut l2);
+        let (mut l1, mut l2) = (&mut l1, &mut l2);
 
-        while let (Some(n1), Some(n2)) = (l1.as_ref(), l2.as_ref()) {
-            if n1.val < n2.val {
-                std::mem::swap(&mut cursor.next,l1);
-                std::mem::swap(&mut cursor.next.as_mut().unwrap().next,l1);
-                //println!("1cursor :{:?}", cursor);
-            } else {
-                std::mem::swap(&mut cursor.next,l2);
-                std::mem::swap(&mut cursor.next.as_mut().unwrap().next,l2);
-                //println!("2cursor :{:?}", cursor);
+        loop {
+            match (l1.as_ref(), l2.as_ref()) {
+                (Some(n1), Some(n2)) => {
+                    if n1.val < n2.val {
+                        std::mem::swap(&mut cursor.next, l1);
+                        std::mem::swap(&mut cursor.next.as_mut().unwrap().next, l1);
+                    } else {
+                        std::mem::swap(&mut cursor.next, l2);
+                        std::mem::swap(&mut cursor.next.as_mut().unwrap().next, l2);
+                    }
+                    cursor = cursor.next.as_mut().unwrap();
+                }
+                (None, Some(n2)) => {
+                    std::mem::swap(&mut cursor.next, l2);
+                    break;
+                }
+                (Some(n1), None) => {
+                    std::mem::swap(&mut cursor.next, l1);
+                    break;
+                }
+                (None, None) => break,
             }
-            cursor = cursor.next.as_mut().unwrap();
-        }
-
-        if l1.is_some() {
-            std::mem::swap(&mut cursor.next, l1);
-        } else {
-            std::mem::swap(&mut cursor.next, l2);
         }
 
         return h.next;
@@ -50,8 +55,33 @@ impl Solution {
 }
 
 fn main() {
-    let l1 = linkedlist![1,2,3,4];
-    let l2 = linkedlist![1,2,3,4];
-    let l3 = Solution::merge_two_lists(l1,l2);
+    let l1 = linkedlist![1, 2, 3, 4];
+    let l2 = linkedlist![1, 2, 3, 4];
+    let l3 = Solution::merge_two_lists(l1, l2);
     println!("{:?}", l3);
 }
+
+/*
+leetcode 上的递归解法
+impl Solution {
+    pub fn merge_two_lists(l1: Option<Box<ListNode>>, l2: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+        if let Some(l1) = l1 {
+            if let Some(l2) = l2 {
+                if l1.val < l2.val {
+                    let l1 = *l1;
+                    let merged_rest = Self::merge_two_lists(l1.next, Some(l2));
+                    Some(Box::new(ListNode{val:l1.val, next: merged_rest}))
+                } else {
+                    let l2 = *l2;
+                    let merged_rest = Self::merge_two_lists(Some(l1), l2.next);
+                    Some(Box::new(ListNode{val:l2.val, next: merged_rest}))
+                }
+            } else {
+                Some(l1)
+            }
+        } else {
+            l2
+        }
+    }
+}
+*/
