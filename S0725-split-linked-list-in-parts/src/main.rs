@@ -20,7 +20,7 @@ impl Solution {
     ) -> Vec<Option<Box<ListNode>>> {
         let mut res = vec![];
         if root.is_none() {
-            for i in 0..k {
+            for _ in 0..k {
                 res.push(None);
             }
             return res;
@@ -30,21 +30,21 @@ impl Solution {
         let mut len = 0;
         let mut cursor = &mut root;
         loop {
-            if let Some(c) = cursor {
-                len += 1;
-                cursor = &mut c.next;
-            } else {
+            if cursor.is_none() {
                 break;
             }
+
+            len += 1;
+            cursor = &mut cursor.as_mut().unwrap().next;
         }
 
         let every_vec_len = len / k;
         // 有这么多需要 every_vec_len + 1 的，剩下的全是 every_vec_len 长度
         let except_vec_count = len - every_vec_len * k;
         cursor = &mut root;
-        for i in 0..except_vec_count {
+        for _ in 0..except_vec_count {
             let mut v = vec![];
-            for j in 0..(every_vec_len+1) {
+            for _ in 0..(every_vec_len + 1) {
                 v.push(cursor.as_ref().unwrap().val);
                 /*
                 if let Some(c) = cursor {
@@ -54,12 +54,12 @@ impl Solution {
                 cursor = &mut cursor.as_mut().unwrap().next;
             }
             // build list from vec
-            let mut l = Solution::build_list_from_vec(v);
+            let l = Solution::build_list_from_vec(v);
             res.push(l);
         }
         loop {
             let mut v = vec![];
-            for j in 0..(every_vec_len) {
+            for _ in 0..(every_vec_len) {
                 v.push(cursor.as_ref().unwrap().val);
                 /*if let Some(c) = cursor {
                     cursor = &mut c.next;
@@ -67,7 +67,7 @@ impl Solution {
                 cursor = &mut cursor.as_mut().unwrap().next;
             }
             // build list from vec
-            let mut l = Solution::build_list_from_vec(v);
+            let l = Solution::build_list_from_vec(v);
             res.push(l);
             if cursor.is_none() {
                 break;
@@ -79,7 +79,7 @@ impl Solution {
         return res;
     }
 
-    fn build_list_from_vec(v : Vec<i32>) -> Option<Box<ListNode>> {
+    fn build_list_from_vec(v: Vec<i32>) -> Option<Box<ListNode>> {
         let mut dummy = Box::new(ListNode::new(0));
         let mut cursor = &mut dummy;
 
@@ -92,7 +92,7 @@ impl Solution {
 }
 
 fn main() {
-    let mut l = linkedlist![1,2,3];
+    let l = linkedlist![1, 2, 3];
     let x = Solution::split_list_to_parts(l, 5);
     println!("{:?}", x);
 }
