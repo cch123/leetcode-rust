@@ -8,9 +8,11 @@ impl Solution {
         let mut replace_vowel_map = HashMap::new();
         for w in wordlist.iter() {
             word_map.insert(w, w);
-            word_lower_map.insert(w.to_ascii_lowercase(), w);
+            if !word_lower_map.contains_key(&w.to_ascii_lowercase()) {
+                word_lower_map.insert(w.to_ascii_lowercase(), w);
+            }
 
-            let s: String = w
+            let s: String = w.to_ascii_lowercase()
                 .chars()
                 .map(|x| match x {
                     'a' | 'e' | 'i' | 'o' | 'u' => '?',
@@ -18,7 +20,9 @@ impl Solution {
                 })
                 .collect::<String>();
 
-            replace_vowel_map.insert(s, w);
+            if !replace_vowel_map.contains_key(&s) {
+                replace_vowel_map.insert(s, w);
+            }
         }
 
         let res = queries
@@ -31,7 +35,7 @@ impl Solution {
                 if word_lower_map.contains_key(&x) {
                     return word_lower_map.get(&x).unwrap().to_string();
                 }
-                let s: String = w
+                let s: String = w.to_ascii_lowercase()
                     .chars()
                     .map(|x| match x {
                         'a' | 'e' | 'i' | 'o' | 'u' => '?',
@@ -44,6 +48,9 @@ impl Solution {
                 return "".to_string();
             })
             .collect::<Vec<String>>();
+        //println!("{:?}", word_map);
+        //println!("{:?}", word_lower_map);
+        //println!("{:?}", replace_vowel_map);
         return res;
     }
 }
