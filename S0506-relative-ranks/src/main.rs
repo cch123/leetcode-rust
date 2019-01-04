@@ -7,16 +7,11 @@ impl Solution {
         let mut sorted= nums.clone();
         sorted.sort_by(|a,b| b.cmp(a));
 
+        let rank_data = vec!["Gold Medal","Silver Medal","Bronze Medal"];
         sorted.iter().enumerate().for_each(|(idx,n)|{
             match idx {
-                0 => {
-                    map.insert(n, "Gold Medal".to_string());
-                },
-                1 => {
-                    map.insert(n, "Silver Medal".to_string());
-                },
-                2 => {
-                    map.insert(n, "Bronze Medal".to_string());
+                0|1|2 => {
+                    map.insert(n, rank_data[idx].to_string());
                 },
                 _ => {
                     map.insert(n, (idx+1).to_string());
