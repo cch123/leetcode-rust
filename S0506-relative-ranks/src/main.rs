@@ -23,12 +23,10 @@ impl Solution {
                 },
             }
         }
-        let mut res = vec![];
+
         nums.iter().map(|x| {
-            let s = map.get(x).unwrap();
-            res.push(s.clone());
-        }).for_each(drop);
-        return res;
+            map.get(x).unwrap().clone()
+        }).collect::<Vec<String>>()
     }
 }
 
