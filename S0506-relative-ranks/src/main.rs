@@ -7,7 +7,7 @@ impl Solution {
         let mut sorted= nums.clone();
         sorted.sort_by(|a,b| b.cmp(a));
 
-        for (idx,n) in sorted.iter().enumerate() {
+        sorted.iter().enumerate().for_each(|(idx,n)|{
             match idx {
                 0 => {
                     map.insert(n, "Gold Medal".to_string());
@@ -22,7 +22,7 @@ impl Solution {
                     map.insert(n, (idx+1).to_string());
                 },
             }
-        }
+        });
 
         nums.iter().map(|x| {
             map.get(x).unwrap().clone()
