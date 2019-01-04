@@ -20,32 +20,56 @@ use leetcode_prelude::*;
 //  }
 //}
 
+type Node = Option<Rc<RefCell<TreeNode>>>;
+
 use std::cell::RefCell;
 use std::rc::Rc;
+
+/*
+学习大佬的写法
 impl Solution {
-    pub fn flatten(root: &mut Option<Rc<RefCell<TreeNode>>>) {
+    pub fn flatten(root: &mut Node) {
+        fn core(node: &mut Node, mut next: Node) -> Node {
+            if let Some(node) = node {
+                next = core(&mut node.borrow_mut().right, next);
+                next = core(&mut node.borrow_mut().left, next);
+                node.borrow_mut().right = next;
+                node.borrow_mut().left = None;
+                next = Some(node.clone());
+            }
+            next
+        }
+        core(root, None);
+    }
+}
+*/
+
+impl Solution {
+    pub fn flatten(root: &mut Node) {
         if root.is_none() {
             return;
         };
-        Solution::flatten(&mut root.as_ref().unwrap().borrow_mut().left);
-        Solution::flatten(&mut root.as_ref().unwrap().borrow_mut().right);
 
-        let mut left = root.as_ref().unwrap().borrow_mut().left.take();
-        let mut right = root.as_ref().unwrap().borrow_mut().right.take();
+        let mut r = root.as_ref().unwrap().borrow_mut();
+        Solution::flatten(&mut r.left);
+        Solution::flatten(&mut r.right);
+
+        let left = r.left.take();
+        let right = r.right.take();
 
         match (left.as_ref(), right.as_ref()) {
             (None, _) => {
                 // take 消耗了 option，所以要赋值回去
-                root.as_ref().unwrap().borrow_mut().right = right;
+                r.right = right;
                 return;
             }
             (_, None) => {
-                root.as_ref().unwrap().borrow_mut().right = Some(Rc::clone(&left.unwrap()));
+                r.right = Some(Rc::clone(&left.unwrap()));
                 return;
             }
             (Some(_), Some(_)) => {
-                let (mut left, mut right) = (left.unwrap(), right.unwrap());
-                root.as_ref().unwrap().borrow_mut().right = Some(Rc::clone(&left));
+                let (left, right) = (left.unwrap(), right.unwrap());
+                r.right = Some(Rc::clone(&left));
                 // 这里也可以不要 cursor 的
                 let mut cursor = left;
                 loop {
