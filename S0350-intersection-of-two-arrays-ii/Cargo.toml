@@ -1,0 +1,7 @@
+[package]
+name = "S0350-intersection-of-two-arrays-ii"
+version = "0.1.0"
+authors = ["xargin <cao1988228@163.com>"]
+edition = "2018"
+
+[dependencies]
