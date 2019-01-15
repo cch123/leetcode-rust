@@ -7,41 +7,31 @@ impl Solution {
         license_plate
             .chars()
             .map(|c| match c {
-                'a'..='z' => {
-                    let cnt = m.get(&c).unwrap_or(&0);
-                    m.insert(c, cnt + 1);
-                }
-                'A'..='Z' => {
+                'a'..='z' | 'A'..='Z' => {
                     let c = c.to_ascii_lowercase();
-                    let cnt = m.get(&c).unwrap_or(&0);
-                    m.insert(c, cnt + 1);
+                    m.entry(c).and_modify(|e| *e += 1).or_insert(1);
                 }
                 _ => {}
             })
             .for_each(drop);
 
         let mut res = "".to_string();
-        for x in words {
+        'outer: for x in words {
             let mut char_cnt = HashMap::new();
             x.chars()
                 .map(|c| {
-                    let cnt = char_cnt.get(&c).unwrap_or(&0);
-                    char_cnt.insert(c, cnt + 1);
+                    char_cnt.entry(c).and_modify(|e| *e += 1).or_insert(1);
                 })
                 .for_each(drop);
 
-            let mut valid = true;
             for (x, y) in m.iter() {
                 if char_cnt.get(x).unwrap_or(&0) < y {
-                    valid = false;
-                    break;
+                    continue 'outer;
                 }
             }
 
-            if valid {
-                if res == "".to_string() || x.len() < res.len() {
-                    res = x.to_string();
-                }
+            if res.is_empty() || x.len() < res.len() {
+                res = x.to_string();
             }
         }
 
