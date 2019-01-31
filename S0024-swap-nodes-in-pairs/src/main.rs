@@ -2,6 +2,28 @@
 use leetcode_prelude::*;
 
 struct Solution;
+use std::mem::{replace, swap};
+
+impl Solution {
+    pub fn swap_pairs(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+        let mut head = head;
+        let mut cursor = &mut head;
+        while cursor.is_some() && cursor.as_ref().unwrap().next.is_some() {
+            let mut n2 = replace(&mut cursor.as_mut().unwrap().next, None);
+            swap(
+                &mut cursor.as_mut().unwrap().next,
+                &mut n2.as_mut().unwrap().next,
+            );
+            swap(&mut n2.as_mut().unwrap().next, cursor);
+            swap(cursor, &mut n2);
+            cursor = &mut cursor.as_mut().unwrap().next.as_mut().unwrap().next;
+        }
+
+        head
+    }
+}
+/*
+struct Solution;
 
 impl Solution {
     pub fn swap_pairs(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
@@ -27,6 +49,7 @@ impl Solution {
         head
     }
 }
+*/
 
 fn main() {
     let l = linkedlist![1, 2, 3, 4];
