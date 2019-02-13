@@ -58,3 +58,50 @@ fn main() {
 
     println!("{:?}",Solution::remove_nth_from_end(a, 4));
 }
+
+/*
+impl Solution {
+    pub fn remove_nth_from_end(head: Option<Box<ListNode>>, n: i32) -> Option<Box<ListNode>> {
+        fn rebuild(head: Option<Box<ListNode>>, n: i32) -> (Option<Box<ListNode>>, i32) {
+            if let Some(mut node) = head {
+                let (tail, m) = rebuild(node.next, n);
+                if m == n {
+                    (tail, m + 1)
+                } else {
+                    node.next = tail;
+                    (Some(node), m + 1)
+                }
+            } else {
+                (None, 1)
+            }
+        }
+        rebuild(head, n).0
+    }
+}
+*/
+
+/*
+pub fn remove(head: Option<Box<ListNode>>, n: i32) -> (i32, Option<Box<ListNode>>) {
+    if let Some(boxed) = head {
+        let (mut tail_index, tail) = remove(boxed.next, n);
+        tail_index += 1;
+
+        if tail_index == n {
+            (tail_index, tail)
+        } else {
+            (tail_index, Some(Box::new(ListNode {
+                val: boxed.val,
+                next: tail
+            })))
+        }
+    } else {
+        (0, None)
+    }
+}
+
+impl Solution {
+    pub fn remove_nth_from_end(head: Option<Box<ListNode>>, n: i32) -> Option<Box<ListNode>> {
+        remove(head, n).1
+    }
+}
+*/
