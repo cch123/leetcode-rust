@@ -68,3 +68,33 @@ impl Solution {
 fn main() {
     dbg!(Solution::longest_consecutive(vec![100, 4, 200, 1, 3, 2]));
 }
+
+
+/*
+use std::collections::HashSet;
+impl Solution {
+    pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
+        let mut set = nums.iter().cloned().collect::<HashSet<_>>();
+        let mut max_len = 0;
+        for val in nums.into_iter() {
+            if !set.contains(&val) 
+            {
+                continue;
+            }
+            set.remove(&val);
+            let mut prev = val - 1;
+            let mut next = val + 1;
+            while set.contains(&prev) {
+                set.remove(&prev);
+                prev -= 1;
+            }
+            while set.contains(&next) {
+                set.remove(&next);
+                next += 1;
+            }
+            max_len = max_len.max(next - prev - 1);
+        }
+        max_len
+    }
+}
+*/
